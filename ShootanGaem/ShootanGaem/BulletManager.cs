@@ -13,6 +13,8 @@ namespace ShootanGaem
         private double fireDelay = 200;
         private double prevShootTime = 0;
 
+        public PatternManager patternManager = new PatternManager();
+
         public BulletManager()
         {
         }
@@ -53,7 +55,9 @@ namespace ShootanGaem
             for (int i = 0; i < activeBullets.Count; i++)
             {
                 if (activeBullets[i].isFired())
+                {
                     activeBullets[i].move();
+                }
             }
         }
 
@@ -63,6 +67,9 @@ namespace ShootanGaem
 
             b.setPosition((int)pos.X, (int)pos.Y);
             b.setFired(true);
+
+            //HARDCODING IN THE PATTERN IN HERE FOR TESTING!!!!!!!!!!!!!!!!!!!! CURRENTLY HAVE .Spiral AND .BackAndForth implemented! ALAN IMPLEMENT MORE
+            patternManager.applyPattern(b, PatternManager.Spiral);
 
             activeBullets.Add(b);
         }

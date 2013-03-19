@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework;
 
 namespace ShootanGaem
 {
-    class Player : Entity
+    class NPC : Entity
     {
-        public Player(Texture2D spr, Vector2 pos) : base(spr, pos)
+        public NPC(Texture2D spr, Vector2 pos) : base(spr, pos)
         {
         }
 
-
+        
     }
 }

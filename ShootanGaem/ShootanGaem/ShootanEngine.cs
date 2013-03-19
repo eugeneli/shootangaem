@@ -33,18 +33,23 @@ namespace ShootanGaem
             player.manageBullets.setDelay(100);
         }
 
+        public void setPlayerDelay(float ms)
+        {
+            player.manageBullets.setDelay(ms);
+        }
+
         //Add bullets to player
-        public void addPlayerBullets(Texture2D sprite, int numBullets)
+        public void addPlayerBullets(Texture2D sprite, int numBullets, Color sprColor)
         {
             for (int i = 0; i < numBullets; i++)
-                player.manageBullets.addBullet(new Bullet(sprite, player.getPosition()));
+                player.manageBullets.addBullet(new Bullet(sprite, player.getPosition(), sprColor));
         }
 
         //Generic add bullets to entity
-        public void addBullets(Entity ent, Texture2D sprite, int numBullets)
+        public void addBullets(Entity ent, Texture2D sprite, int numBullets, Color sprColor)
         {
             for (int i = 0; i < numBullets; i++)
-                ent.manageBullets.addBullet(new Bullet(sprite, ent.getPosition()));
+                ent.manageBullets.addBullet(new Bullet(sprite, ent.getPosition(), sprColor));
         }
 
         public void update(GameTime gameTime)
@@ -98,7 +103,7 @@ namespace ShootanGaem
             List<Bullet> bullets = player.manageBullets.getActiveBullets();
             for (int i = 0; i < bullets.Count; i++)
             {
-                spriteBatch.Draw(bullets[i].sprite, bullets[i].getPosition(), null, Color.White, bullets[i].rotationAngle, bullets[i].getOrigin(), 1.0f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(bullets[i].sprite, bullets[i].getPosition(), null, bullets[i].spriteColor, bullets[i].rotationAngle, bullets[i].getOrigin(), 1.0f, SpriteEffects.None, 0f);
             }
 
             spriteBatch.End();

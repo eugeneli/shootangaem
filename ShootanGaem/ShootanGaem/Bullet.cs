@@ -11,24 +11,25 @@ namespace ShootanGaem
     {
         public float rotationAngle = 0;
         public Vector2 direction = new Vector2(0, -1);
+        public Color spriteColor;
 
         private int baseDamage = 10;
         private bool fired = false; //Determines of bullet should be drawn
-
+        
         //Constructors for bullets
-        public Bullet(Texture2D spr, Vector2 pos)
-            : base(spr, pos)
+        public Bullet(Texture2D spr, Vector2 pos, Color sprColor) : base(spr, pos)
         {
             sprite = spr;
             speed = 20;
+            spriteColor = sprColor;
         }
 
-        public Bullet(Texture2D spr, Vector2 pos, int dmg, float spd)
-            : base(spr, pos)
+        public Bullet(Texture2D spr, Vector2 pos, Color sprColor, int dmg, float spd) : base(spr, pos)
         {
             sprite = spr;
             baseDamage = dmg;
             speed = spd;
+            spriteColor = sprColor;
         }
 
         public void setFired(bool isFired)
@@ -50,8 +51,10 @@ namespace ShootanGaem
         public void move()
         {
             //Need to get rid of the decimals or the bounding rectangle will get misplaced over time since Rectangles only take ints
-            position.X += (int)(direction.X * speed);
-            position.Y += (int)(direction.Y * speed);
+            //position.X += (float)(direction.X * speed);
+            //position.Y += (float)(direction.Y * speed);
+
+            position += (speed*direction);
 
             //boundingRect.X += (int)(direction.X * speed);
             //boundingRect.Y += (int)(direction.Y * speed);

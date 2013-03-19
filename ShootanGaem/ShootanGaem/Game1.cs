@@ -41,7 +41,8 @@ namespace ShootanGaem
             Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, spriteBatch);
             Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
 
-            Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\player_default"), 50);
+            Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 50, Color.Orange);
+            Engine.setPlayerDelay(20);
         }
 
         protected override void UnloadContent()

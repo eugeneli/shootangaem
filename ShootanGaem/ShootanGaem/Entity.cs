@@ -68,5 +68,18 @@ namespace ShootanGaem
             position.Y += speed;
         }
 
+        public void fire(double currentTime)
+        {
+            if (manageBullets.fireDelayOver(currentTime))
+            {
+                manageBullets.releaseBullet(position);
+            }
+        }
+
+        public int getBulletCount()
+        {
+            return manageBullets.numActiveBullets();
+        }
+
     }
 }
