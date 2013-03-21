@@ -7,24 +7,30 @@ using Microsoft.Xna.Framework;
 
 namespace ShootanGaem
 {
-    class Bullet : Entity
+    class Bullet
     {
+        public Texture2D sprite;
+        public Color spriteColor;
+
         public float rotationAngle = 0;
         public Vector2 direction = new Vector2(0, -1);
-        public Color spriteColor;
+        public float speed;
+
+        public Vector2 position;
+        public Vector2 origin;
 
         private int baseDamage = 10;
         private bool fired = false; //Determines of bullet should be drawn
         
         //Constructors for bullets
-        public Bullet(Texture2D spr, Vector2 pos, Color sprColor) : base(spr, pos)
+        public Bullet(Texture2D spr, Vector2 pos, Color sprColor)
         {
             sprite = spr;
-            speed = 20;
+            speed = 5;
             spriteColor = sprColor;
         }
 
-        public Bullet(Texture2D spr, Vector2 pos, Color sprColor, int dmg, float spd) : base(spr, pos)
+        public Bullet(Texture2D spr, Vector2 pos, Color sprColor, int dmg, float spd)
         {
             sprite = spr;
             baseDamage = dmg;

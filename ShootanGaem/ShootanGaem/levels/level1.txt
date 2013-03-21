@@ -1,0 +1,3 @@
+NEW_WAVE
+monster1.txt
+monster2.txt

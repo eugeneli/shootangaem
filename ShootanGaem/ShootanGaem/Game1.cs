@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -38,11 +39,16 @@ namespace ShootanGaem
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, spriteBatch);
+            Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, spriteBatch, Content);
             Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
 
-            Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 50, Color.Orange);
+            Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
+            Engine.addPlayerPattern(PatternManager.BackAndForth);
             Engine.setPlayerDelay(20);
+
+            //Load Level
+            StreamReader level = new StreamReader(@"levels\level1.txt");
+            Engine.loadLevel(level);
         }
 
         protected override void UnloadContent()

@@ -21,6 +21,12 @@ namespace ShootanGaem
 
         public BulletManager manageBullets = new BulletManager();
 
+        public Entity()
+        {
+            health = 100;
+            speed = 10;
+        }
+
         public Entity(Texture2D spr, Vector2 pos)
         {
             health = 100;
@@ -30,6 +36,11 @@ namespace ShootanGaem
 
             position = pos;
             origin = new Vector2(spr.Width / 2, spr.Height / 2);
+        }
+
+        public void setSprite(Texture2D spr)
+        {
+            sprite = spr;
         }
 
         public Vector2 getPosition()
@@ -42,10 +53,20 @@ namespace ShootanGaem
             return origin;
         }
 
+        public void setPosition(Vector2 pos)
+        {
+            position = pos;
+        }
+
         public void setPosition(int x, int y)
         {
             position.X = x;
             position.Y = y;
+        }
+
+        public void setHP(int hp)
+        {
+            health = hp;
         }
 
         public void moveLeft()
@@ -68,17 +89,30 @@ namespace ShootanGaem
             position.Y += speed;
         }
 
+        //Bullet-related methods
         public void fire(double currentTime)
         {
             if (manageBullets.fireDelayOver(currentTime))
             {
-                manageBullets.releaseBullet(position);
+                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2, position.Y);
+                manageBullets.releaseBullet(middleOfSprite);
             }
         }
 
         public int getBulletCount()
         {
             return manageBullets.numActiveBullets();
+        }
+
+        public void addBullets(Texture2D sprite, int numBullets, Color sprColor)
+        {
+            for (int i = 0; i < numBullets; i++)
+                manageBullets.addBullet(new Bullet(sprite, position, sprColor));
+        }
+
+        public void addPattern(Pattern p)
+        {
+            manageBullets.addPattern(p);
         }
 
     }

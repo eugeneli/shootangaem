@@ -10,8 +10,11 @@ namespace ShootanGaem
     {
         private Queue<Bullet> bullets = new Queue<Bullet>();
         private List<Bullet> activeBullets = new List<Bullet>();
-        private double fireDelay = 200;
+        private double fireDelay = 20;
         private double prevShootTime = 0;
+
+        private List<Pattern> attackPatterns = new List<Pattern>();
+        private int currentPattern = 0;
 
         public PatternManager patternManager = new PatternManager();
 
@@ -22,6 +25,11 @@ namespace ShootanGaem
         public void addBullet(Bullet b)
         {
             bullets.Enqueue(b);
+        }
+
+        public void addPattern(Pattern p)
+        {
+            attackPatterns.Add(p);
         }
 
         public void setDelay(double ms)
@@ -63,22 +71,25 @@ namespace ShootanGaem
 
         public void releaseBullet(Vector2 pos)
         {
-            Bullet b = bullets.Dequeue();
+            if (bullets.Count > 0)
+            {
+                Bullet b = bullets.Dequeue();
 
-            b.setPosition((int)pos.X, (int)pos.Y);
-            b.setFired(true);
+                b.position = new Vector2((int)pos.X, (int)pos.Y);
+                b.setFired(true);
 
-            //HARDCODING IN THE PATTERN IN HERE FOR TESTING!!!!!!!!!!!!!!!!!!!! CURRENTLY HAVE .Spiral AND .BackAndForth implemented! ALAN IMPLEMENT MORE
-            patternManager.applyPattern(b, PatternManager.Spiral);
+                patternManager.applyPattern(b, attackPatterns[currentPattern]);
 
-            activeBullets.Add(b);
+                activeBullets.Add(b);
+            }
+            
         }
 
         public void recycleBullet(Bullet b)
         {
             activeBullets.Remove(b);
             b.setFired(false);
-            b.setPosition(0, 0);
+            b.position = new Vector2(0, 0);
             bullets.Enqueue(b);
         }
     }
