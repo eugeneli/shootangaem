@@ -16,8 +16,32 @@ namespace ShootanGaem
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D background;
+        Rectangle backgroundRect;
 
+        StreamReader level;
         ShootanEngine Engine;
+
+        //UI objects
+        SGButtonContainer mainMenu;
+        SGButton startButton;
+        SGButton loadButton;
+        SGButton DLCButton;
+        SGButton quitButton;
+
+        SGButtonContainer levelMenu;
+        SGButton level1;
+        SGButton level2;
+        SGButton level3;
+        SGButton backButton;
+
+        enum GameState
+        {
+            MainMenu,
+            InitializeLevel,
+            InGame,
+        }
+        GameState CurrentGameState = GameState.MainMenu;
 
         public Game1()
         {
@@ -31,6 +55,7 @@ namespace ShootanGaem
 
         protected override void Initialize()
         {
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -39,16 +64,61 @@ namespace ShootanGaem
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, spriteBatch, Content);
-            Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
+            background = Content.Load<Texture2D>(@"menu\background"); //TEMP BACKGROUND. CHANGE TO SOMETHING COOLER LATER
+            backgroundRect = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
-            Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
-            Engine.addPlayerPattern(PatternManager.BackAndForth);
-            Engine.setPlayerDelay(20);
+            //Create engine
+            Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, Content);
 
-            //Load Level
-            StreamReader level = new StreamReader(@"levels\level1.txt");
-            Engine.loadLevel(level);
+            /* ---------
+             * UI Stuff
+               --------*/
+            //Main Menu
+            mainMenu = new SGButtonContainer();
+
+            startButton = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth/2 - 200, -320, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            startButton.setText("New Game");
+
+            loadButton = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth / 2 - 200, -240, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            loadButton.setText("Load level");
+
+            DLCButton = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth / 2 - 200, -160, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            DLCButton.setText("DLC");
+
+            quitButton = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth / 2 - 200, -80, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            quitButton.setText("Quit");
+
+            //Add MainMenu buttons to MainMenu container
+            mainMenu.add(startButton);
+            mainMenu.add(loadButton);
+            mainMenu.add(DLCButton);
+            mainMenu.add(quitButton);
+
+            //Set the stopping position for sliding animation and slide it
+            mainMenu.setSlideGoal(graphics.PreferredBackBufferWidth / 2 - 200, 380);
+            mainMenu.slideDown();
+
+            //Level selection menu
+            levelMenu = new SGButtonContainer();
+
+            //Create level selection buttons
+            level1 = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth + 400, 400, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            level1.setText("Level One");
+
+            level2 = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth + 400, 480, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            level2.setText("Level Two");
+
+            level3 = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth + 400, 560, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            level3.setText("Level Three");
+
+            backButton = new SGButton(Content.Load<Texture2D>(@"menu\button"), Content.Load<Texture2D>(@"menu\button_down"), new Rectangle(graphics.PreferredBackBufferWidth + 400, 560, 400, 70), Content.Load<SpriteFont>("MenuFont"));
+            backButton.setText("Back");
+
+            //Add level selection buttons to container
+            levelMenu.add(level1);
+            levelMenu.add(level2);
+            levelMenu.add(level3);
+            levelMenu.add(backButton);
         }
 
         protected override void UnloadContent()
@@ -62,7 +132,80 @@ namespace ShootanGaem
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            Engine.update(gameTime);
+            switch (CurrentGameState)
+            {
+                case GameState.MainMenu:
+                    //Update menus/buttons
+                    mainMenu.update(Mouse.GetState());
+                    levelMenu.update(Mouse.GetState());
+
+                    //Handle menu clicks
+                    if (startButton.clicked)
+                    {
+                        level = new StreamReader(@"levels\level1.txt");
+                        CurrentGameState = GameState.InitializeLevel;
+
+                        startButton.clicked = false;
+                    }
+                    if (loadButton.clicked)
+                    {
+                        mainMenu.setSlideGoal(-400, 380);
+                        mainMenu.slideLeft();
+                        
+                        levelMenu.setSlideGoal(graphics.PreferredBackBufferWidth / 2 - 200, 380);
+                        levelMenu.slideLeft();
+
+                        loadButton.clicked = false;
+                    }
+                    if (level1.clicked)
+                    {
+                        level = new StreamReader(@"levels\level1.txt");
+                        CurrentGameState = GameState.InitializeLevel;
+
+                        level1.clicked = false;
+                    }
+                    if (level2.clicked)
+                    {
+                        level = new StreamReader(@"levels\level2.txt");
+                        CurrentGameState = GameState.InitializeLevel;
+
+                        level2.clicked = false;
+                    }
+                    if (level3.clicked)
+                    {
+                        level = new StreamReader(@"levels\level3.txt");
+                        CurrentGameState = GameState.InitializeLevel;
+
+                        level3.clicked = false;
+                    }
+                    if (backButton.clicked)
+                    {
+                        levelMenu.setSlideGoal(graphics.PreferredBackBufferWidth+400, 380);
+                        levelMenu.slideRight();
+
+                        mainMenu.setSlideGoal(graphics.PreferredBackBufferWidth / 2 - 200, 380);
+                        mainMenu.slideRight();
+
+                        backButton.clicked = false;
+                    }
+
+                    break;
+                case GameState.InitializeLevel:
+                    Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
+                    Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
+                    Engine.addPlayerPattern(PatternManager.BackAndForth);
+                    Engine.setPlayerDelay(20);
+
+                    //Load Level
+                    Engine.loadLevel(level);
+
+                    //Change game state
+                    CurrentGameState = GameState.InGame;
+                    break;
+                case GameState.InGame:
+                    Engine.update(gameTime);
+                    break;
+            }
 
             base.Update(gameTime);
         }
@@ -71,7 +214,29 @@ namespace ShootanGaem
         {
             GraphicsDevice.Clear(Color.Black);
 
-            Engine.draw();
+            switch (CurrentGameState)
+            {
+                case GameState.MainMenu:
+                    spriteBatch.Begin();
+                    
+                    //Draw background image
+                    spriteBatch.Draw(background, backgroundRect, Color.White);
+
+                    //Draw menu
+                    mainMenu.draw(spriteBatch);
+                    levelMenu.draw(spriteBatch);
+
+                    spriteBatch.End();
+                    break;
+                case GameState.InitializeLevel:
+                    //?? loading screen perhaps?
+                    break;
+                case GameState.InGame:
+                    spriteBatch.Begin();
+                    Engine.draw(spriteBatch);
+                    spriteBatch.End();
+                    break;
+            }
 
             base.Draw(gameTime);
         }

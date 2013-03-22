@@ -1,5 +1,9 @@
 Content\sprites\player_default.xnb
 Content\sprites\round_bullet.xnb
+Content\menu\background.xnb
+Content\menu\button.xnb
+Content\menu\button_down.xnb
+Content\MenuFont.xnb
 levels\level1.txt
 monsters\monster1.txt
 monsters\monster2.txt

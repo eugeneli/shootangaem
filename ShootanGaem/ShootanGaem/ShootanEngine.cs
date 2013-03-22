@@ -14,7 +14,6 @@ namespace ShootanGaem
     {
         ContentManager Content;
         KeyboardState keyboardState;
-        SpriteBatch spriteBatch;
 
         private int GAME_WIDTH;
         private int GAME_HEIGHT;
@@ -24,11 +23,10 @@ namespace ShootanGaem
 
         private List<NPC> activeEnemies = new List<NPC>();
 
-        public ShootanEngine(int width, int height, SpriteBatch sb, ContentManager cm)
+        public ShootanEngine(int width, int height, ContentManager cm)
         {
             GAME_WIDTH = width;
             GAME_HEIGHT = height;
-            spriteBatch = sb;
             Content = cm;
         }
 
@@ -123,7 +121,7 @@ namespace ShootanGaem
                     //Since we've retrieved all the enemies in the wave, we can remove it from Level's queue
                     level.discardCurrentWave();
                 }
-                else //If there are active enemies, let them do their stuff
+                else //If there are active enemies, let them do their actions
                 {
                     for (int i = 0; i < activeEnemies.Count; i++)
                     {
@@ -144,10 +142,8 @@ namespace ShootanGaem
             }
         }
 
-        public void draw()
+        public void draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-
             //Draw player and their bullets
             spriteBatch.Draw(player.sprite, player.getPosition(), Color.White);
 
@@ -168,8 +164,6 @@ namespace ShootanGaem
                     spriteBatch.Draw(enemyBullets[c].sprite, enemyBullets[c].position, null, enemyBullets[c].spriteColor, enemyBullets[c].rotationAngle, enemyBullets[c].origin, 1.0f, SpriteEffects.None, 0f);
                 }
             }
-
-            spriteBatch.End();
         }
 
     }
