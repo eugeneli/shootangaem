@@ -63,7 +63,6 @@ namespace ShootanGaem
             //Do sliding, if any
             if (slidingDown && buttons[0].getPosition().Y < goal.Y)
             {
-                Console.WriteLine(buttons[0].buttonText + " GOING DOWN");
                 setPosition((int)buttons[0].getPosition().X, (int)buttons[0].getPosition().Y + slideSpeed);
 
                 if (buttons[0].getPosition().Y >= goal.Y)
@@ -74,7 +73,6 @@ namespace ShootanGaem
 
             if (slidingLeft && buttons[0].getPosition().X > goal.X)
             {
-                Console.WriteLine(buttons[0].buttonText + " GOING LEFT");
                 setPosition((int)buttons[0].getPosition().X - slideSpeed, (int)buttons[0].getPosition().Y);
 
                 if (buttons[0].getPosition().X <= goal.X)
@@ -85,7 +83,6 @@ namespace ShootanGaem
 
             if (slidingRight && buttons[0].getPosition().X < goal.X)
             {
-                Console.WriteLine(buttons[0].buttonText + " GOING RIGHT");
                 setPosition((int)buttons[0].getPosition().X + slideSpeed, (int)buttons[0].getPosition().Y);
 
                 if (buttons[0].getPosition().X >= goal.X)

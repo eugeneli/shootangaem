@@ -10,7 +10,7 @@ namespace ShootanGaem
 {
     class SGButton
     {
-        public string buttonText = "Default text";
+        private string buttonText = "Default text";
         private Texture2D currentTexture;
         private Texture2D buttonUpTexture;
         private Texture2D buttonDownTexture;

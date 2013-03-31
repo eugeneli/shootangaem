@@ -1,4 +1,4 @@
-SPRITE player_default
+SPRITE enemy
 XPOS 200
 YPOS 200
 HP 200

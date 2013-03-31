@@ -16,11 +16,13 @@ namespace ShootanGaem
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D background;
         Rectangle backgroundRect;
 
         StreamReader level;
         ShootanEngine Engine;
+
+        //background
+        Background background;
 
         //UI objects
         SGButtonContainer mainMenu;
@@ -49,8 +51,8 @@ namespace ShootanGaem
             Content.RootDirectory = "Content";
 
             //Set size of game
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 1024;
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
         }
 
         protected override void Initialize()
@@ -64,8 +66,9 @@ namespace ShootanGaem
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            background = Content.Load<Texture2D>(@"menu\background"); //TEMP BACKGROUND. CHANGE TO SOMETHING COOLER LATER
-            backgroundRect = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            //scrolling background
+            background = new Background(Content.Load<Texture2D>(@"backgrounds\bg"), graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            background.setScroll("DOWNLEFT");
 
             //Create engine
             Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, Content);
@@ -95,7 +98,7 @@ namespace ShootanGaem
             mainMenu.add(quitButton);
 
             //Set the stopping position for sliding animation and slide it
-            mainMenu.setSlideGoal(graphics.PreferredBackBufferWidth / 2 - 200, 380);
+            mainMenu.setSlideGoal(graphics.PreferredBackBufferWidth / 2 - 200, 400);
             mainMenu.slideDown();
 
             //Level selection menu
@@ -135,9 +138,10 @@ namespace ShootanGaem
             switch (CurrentGameState)
             {
                 case GameState.MainMenu:
-                    //Update menus/buttons
+                    //Update menus/buttons/background
                     mainMenu.update(Mouse.GetState());
                     levelMenu.update(Mouse.GetState());
+                    background.update(gameTime);
 
                     //Handle menu clicks
                     if (startButton.clicked)
@@ -193,7 +197,7 @@ namespace ShootanGaem
                 case GameState.InitializeLevel:
                     Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
                     Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
-                    Engine.addPlayerPattern(PatternManager.BackAndForth);
+                    Engine.addPlayerPattern(PatternManager.Mix);
                     Engine.setPlayerDelay(20);
 
                     //Load Level
@@ -220,7 +224,7 @@ namespace ShootanGaem
                     spriteBatch.Begin();
                     
                     //Draw background image
-                    spriteBatch.Draw(background, backgroundRect, Color.White);
+                    background.draw(spriteBatch);
 
                     //Draw menu
                     mainMenu.draw(spriteBatch);
