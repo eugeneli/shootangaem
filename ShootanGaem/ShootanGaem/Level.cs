@@ -23,6 +23,9 @@ namespace ShootanGaem
         private int enemySpawnDelay = 2000; //Delay between when new enemies are spawned
         private int numWaves;
 
+        //used to temporarily hold wave data before enqueuing
+        private Wave temp_wave;
+
         public Level(StreamReader levelData, ContentManager cm)
         {
             Content = cm;
@@ -32,16 +35,24 @@ namespace ShootanGaem
             {
                 if (line == "NEW_WAVE")
                 {
-                    Wave w = new Wave();
-                    w.waveEnemies = new Queue<NPC>();
-                    waves.Enqueue(w);
+                    temp_wave = new Wave();
+                    temp_wave.waveEnemies = new Queue<NPC>();
+                }
+                else if (line == "END_WAVE")
+                {
+                    waves.Enqueue(temp_wave);
                 }
                 else
                 {
                     StreamReader sr = new StreamReader(@"monsters\" + line);
-                    waves.Peek().waveEnemies.Enqueue(createNPC(sr));
+                    temp_wave.waveEnemies.Enqueue(createNPC(sr));
                 }
             }
+        }
+
+        public int getNumWaves()
+        {
+            return waves.Count;
         }
 
         private NPC createNPC(StreamReader npcData)

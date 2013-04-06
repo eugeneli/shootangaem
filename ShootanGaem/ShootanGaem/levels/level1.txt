@@ -1,3 +1,9 @@
 NEW_WAVE
 monster1.txt
 monster2.txt
+END_WAVE
+NEW_WAVE
+monster1.txt
+monster2.txt
+staticmonster.txt
+END_WAVE

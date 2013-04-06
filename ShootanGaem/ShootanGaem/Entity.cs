@@ -69,6 +69,21 @@ namespace ShootanGaem
             health = hp;
         }
 
+        public void takeDamage(int dmg)
+        {
+            health -= dmg;
+        }
+
+        public int getHealth()
+        {
+            return health;
+        }
+
+        public Rectangle getHitBox()
+        {
+            return new Rectangle((int)position.X, (int)position.Y, sprite.Width, sprite.Height);
+        }
+
         public void moveLeft()
         {
             position.X -= speed;
@@ -89,12 +104,18 @@ namespace ShootanGaem
             position.Y += speed;
         }
 
+        //Collision check
+        public bool isHitBy(Bullet b)
+        {
+            return getHitBox().Intersects(b.getHitBox());
+        }
+
         //Bullet-related methods
         public void fire(double currentTime)
         {
             if (manageBullets.fireDelayOver(currentTime))
             {
-                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2, position.Y);
+                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2 -10, position.Y);
                 manageBullets.releaseBullet(middleOfSprite);
             }
         }
@@ -107,7 +128,13 @@ namespace ShootanGaem
         public void addBullets(Texture2D sprite, int numBullets, Color sprColor)
         {
             for (int i = 0; i < numBullets; i++)
-                manageBullets.addBullet(new Bullet(sprite, position, sprColor));
+                manageBullets.addBullet(new Bullet(sprite, sprColor));
+        }
+
+        public void addBullets(Texture2D sprite, int numBullets, Color sprColor, int dmg, float spd)
+        {
+            for (int i = 0; i < numBullets; i++)
+                manageBullets.addBullet(new Bullet(sprite, sprColor, dmg, spd));
         }
 
         public void addPattern(Pattern p)

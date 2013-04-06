@@ -23,19 +23,24 @@ namespace ShootanGaem
         private bool fired = false; //Determines of bullet should be drawn
         
         //Constructors for bullets
-        public Bullet(Texture2D spr, Vector2 pos, Color sprColor)
+        public Bullet(Texture2D spr, Color sprColor)
         {
             sprite = spr;
             speed = 5;
             spriteColor = sprColor;
         }
 
-        public Bullet(Texture2D spr, Vector2 pos, Color sprColor, int dmg, float spd)
+        public Bullet(Texture2D spr, Color sprColor, int dmg, float spd)
         {
             sprite = spr;
             baseDamage = dmg;
             speed = spd;
             spriteColor = sprColor;
+        }
+
+        public Rectangle getHitBox()
+        {
+            return new Rectangle((int)position.X, (int)position.Y, sprite.Width, sprite.Height);
         }
 
         public void setFired(bool isFired)

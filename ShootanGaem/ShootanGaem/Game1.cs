@@ -196,9 +196,9 @@ namespace ShootanGaem
                     break;
                 case GameState.InitializeLevel:
                     Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
-                    Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
-                    Engine.addPlayerPattern(PatternManager.Mix);
-                    Engine.setPlayerDelay(20);
+                    Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange, 10, 20);
+                    Engine.addPlayerPattern(PatternManager.Straight);
+                    Engine.setPlayerDelay(50);
 
                     //Load Level
                     Engine.loadLevel(level);

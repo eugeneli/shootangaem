@@ -17,6 +17,8 @@ namespace ShootanGaem
         public static Pattern BladeRotate = new Pattern();
         public static Pattern Test = new Pattern();
 
+        public static Pattern Straight = new Pattern();
+
         public PatternManager()
         {
             //Set values for Spiral pattern
@@ -56,6 +58,9 @@ namespace ShootanGaem
             Test.rotationAngle = (float)(Math.PI / 4);
             Test.rotationIncrement = (float)(Math.PI);
             Test.once = true;
+
+            //Set values for straight pattern
+            Straight.rotationAngle = (float)(-Math.PI/2);
         }
 
         //Should be better way of detecting which Pattern to do instead of nesting a bunch of conditionals :|
@@ -113,7 +118,7 @@ namespace ShootanGaem
 
                     p.tick++;
 
-
+                    
                 }
             }
         }

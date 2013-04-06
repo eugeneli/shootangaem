@@ -44,9 +44,9 @@ namespace ShootanGaem
         }
 
         //Add bullets to player
-        public void addPlayerBullets(Texture2D sprite, int numBullets, Color sprColor)
+        public void addPlayerBullets(Texture2D sprite, int numBullets, Color sprColor, int dmg, float spd)
         {
-            player.addBullets(sprite, numBullets, sprColor);
+            player.addBullets(sprite, numBullets, sprColor, dmg, spd);
         }
 
         public void addPlayerPattern(Pattern p)
@@ -101,6 +101,29 @@ namespace ShootanGaem
                 //If bullet is out of bounds, recycle it
                 if (bullets[i].position.X < 0 || bullets[i].position.Y < 0 || bullets[i].position.X > GAME_WIDTH || bullets[i].position.Y > GAME_HEIGHT)
                     player.manageBullets.recycleBullet(bullets[i]);
+                else
+                {
+                    //Handle collision with enemy
+                    for (int c = 0; c < activeEnemies.Count; c++)
+                    {
+                        NPC n = activeEnemies[c];
+                        Bullet b = bullets[i];
+                        if (n.isHitBy(b))
+                        {
+                            activeEnemies[c].takeDamage(bullets[i].getDamage());
+
+                            //If enemy has <= hp, remove it
+                            if (activeEnemies[c].getHealth() <= 0)
+                            {
+                                activeEnemies.Remove(activeEnemies[c]);
+                                c--;
+                            }
+
+                            //Recycle bullet when it hits an enemy
+                            player.manageBullets.recycleBullet(bullets[i]);
+                        }
+                    }
+                }
             }
 
 
