@@ -12,6 +12,7 @@ namespace ShootanGaem
 {
     class ShootanEngine
     {
+        GraphicsDevice graphicsDevice;
         ContentManager Content;
         KeyboardState keyboardState;
 
@@ -22,19 +23,23 @@ namespace ShootanGaem
         private Player player;
 
         private List<NPC> activeEnemies = new List<NPC>();
+        private ParticleManager particleManager;
 
-        public ShootanEngine(int width, int height, ContentManager cm)
+        public ShootanEngine(GraphicsDevice gd, int width, int height, ContentManager cm)
         {
             GAME_WIDTH = width;
             GAME_HEIGHT = height;
             Content = cm;
+            graphicsDevice = gd;
+
+            particleManager = new ParticleManager(gd);
         }
 
         //Creates player object
         public void createPlayer(Texture2D sprite, Vector2 pos)
         {
             player = new Player(sprite, pos);
-            player.manageBullets.setDelay(100);
+            //player.manageBullets.setDelay(100);
         }
 
         //Changes player's fire delay
@@ -69,19 +74,19 @@ namespace ShootanGaem
              * --------------
              */
             //Player movement
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (keyboardState.IsKeyDown(Keys.Up) && player.getPosition().Y > 0)
             {
                 player.moveUp();
             }
-            if (keyboardState.IsKeyDown(Keys.Down))
+            if (keyboardState.IsKeyDown(Keys.Down) && player.getPosition().Y+player.getSprite().Height < GAME_HEIGHT)
             {
                 player.moveDown();
             }
-            if (keyboardState.IsKeyDown(Keys.Left))
+            if (keyboardState.IsKeyDown(Keys.Left) && player.getPosition().X > 0)
             {
                 player.moveLeft();
             }
-            if (keyboardState.IsKeyDown(Keys.Right))
+            if (keyboardState.IsKeyDown(Keys.Right) && player.getPosition().X + player.getSprite().Width < GAME_WIDTH)
             {
                 player.moveRight();
             }
@@ -104,23 +109,27 @@ namespace ShootanGaem
                 else
                 {
                     //Handle collision with enemy
-                    for (int c = 0; c < activeEnemies.Count; c++)
+                    for (int c = 0; c < activeEnemies.Count && i < bullets.Count; c++)
                     {
-                        NPC n = activeEnemies[c];
-                        Bullet b = bullets[i];
-                        if (n.isHitBy(b))
+                        if (!activeEnemies[c].isDead())
                         {
-                            activeEnemies[c].takeDamage(bullets[i].getDamage());
-
-                            //If enemy has <= hp, remove it
-                            if (activeEnemies[c].getHealth() <= 0)
+                            if (activeEnemies[c].isHitBy(bullets[i]))
                             {
-                                activeEnemies.Remove(activeEnemies[c]);
-                                c--;
-                            }
+                                activeEnemies[c].takeDamage(bullets[i].getDamage());
+                                activeEnemies[c].hit = true;
 
-                            //Recycle bullet when it hits an enemy
-                            player.manageBullets.recycleBullet(bullets[i]);
+                                //Generate particles
+                                particleManager.generateParticles(activeEnemies[c]);
+
+                                //If enemy has <= 0 hp, mark as dead
+                                if (activeEnemies[c].getHealth() <= 0)
+                                {
+                                    activeEnemies[c].die();
+                                }
+
+                                //Recycle bullet when it hits an enemy
+                                player.manageBullets.recycleBullet(bullets[i]);
+                            }
                         }
                     }
                 }
@@ -144,11 +153,12 @@ namespace ShootanGaem
                     //Since we've retrieved all the enemies in the wave, we can remove it from Level's queue
                     level.discardCurrentWave();
                 }
-                else //If there are active enemies, let them do their actions
+                else //If there are alive active enemies, let them do their actions
                 {
                     for (int i = 0; i < activeEnemies.Count; i++)
                     {
-                        activeEnemies[i].doAction(gameTime.TotalGameTime.TotalMilliseconds);
+                        if (!activeEnemies[i].isDead())
+                            activeEnemies[i].doAction(gameTime.TotalGameTime.TotalMilliseconds);
 
                         //Handle enemy bullet movement
                         activeEnemies[i].manageBullets.updatePosition();
@@ -160,15 +170,25 @@ namespace ShootanGaem
                             if (enemyBullets[c].position.X < 0 || enemyBullets[c].position.Y < 0 || enemyBullets[c].position.X > GAME_WIDTH || enemyBullets[c].position.Y > GAME_HEIGHT)
                                 activeEnemies[i].manageBullets.recycleBullet(enemyBullets[c]);
                         }
+
+                        //If all of NPC's bullets are out of screen and it's dead, remove from activeEnemies
+                        if (activeEnemies[i].manageBullets.getActiveBullets().Count == 0 && activeEnemies[i].isDead())
+                        {
+                            activeEnemies.Remove(activeEnemies[i]);
+                            i--;
+                        }
                     }
                 }
             }
+
+            //Update particles, if any
+            particleManager.updateParticles();
         }
 
         public void draw(SpriteBatch spriteBatch)
         {
             //Draw player and their bullets
-            spriteBatch.Draw(player.sprite, player.getPosition(), Color.White);
+            spriteBatch.Draw(player.getSprite(), player.getPosition(), Color.White);
 
             List<Bullet> bullets = player.manageBullets.getActiveBullets();
             for (int i = 0; i < bullets.Count; i++)
@@ -179,13 +199,27 @@ namespace ShootanGaem
             //Draw enemies and their bullets
             for (int i = 0; i < activeEnemies.Count; i++)
             {
-                spriteBatch.Draw(activeEnemies[i].sprite, activeEnemies[i].getPosition(), Color.White);
+                //Gray the sprite if enemy was hit
+                if (!activeEnemies[i].isDead() && activeEnemies[i].hit)
+                {
+                    spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.Black);
+                    activeEnemies[i].hit = false;
+                }
+                else if (!activeEnemies[i].isDead() && !activeEnemies[i].hit)
+                    spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.White);
 
                 List<Bullet> enemyBullets = activeEnemies[i].manageBullets.getActiveBullets();
                 for (int c = 0; c < enemyBullets.Count; c++)
                 {
                     spriteBatch.Draw(enemyBullets[c].sprite, enemyBullets[c].position, null, enemyBullets[c].spriteColor, enemyBullets[c].rotationAngle, enemyBullets[c].origin, 1.0f, SpriteEffects.None, 0f);
                 }
+            }
+
+            //Draw particles, if any
+            List<ParticleManager.Particle> particles = particleManager.getParticles();
+            for (int i = 0; i < particles.Count; i++)
+            {
+                spriteBatch.Draw(particles[i].particleSprite, particles[i].position, Color.White);
             }
         }
 

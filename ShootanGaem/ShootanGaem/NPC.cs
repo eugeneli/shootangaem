@@ -15,6 +15,8 @@ namespace ShootanGaem
 
         private Vector2 target;
 
+        public bool hit = false;
+
         public NPC() : base() { }
 
         public NPC(Texture2D spr, Vector2 pos) : base(spr, pos)

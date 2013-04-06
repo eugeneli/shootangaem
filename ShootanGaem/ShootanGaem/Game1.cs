@@ -71,7 +71,7 @@ namespace ShootanGaem
             background.setScroll("DOWNLEFT");
 
             //Create engine
-            Engine = new ShootanEngine(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, Content);
+            Engine = new ShootanEngine(GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, Content);
 
             /* ---------
              * UI Stuff

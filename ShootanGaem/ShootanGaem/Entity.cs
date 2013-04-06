@@ -11,9 +11,10 @@ namespace ShootanGaem
 {
     class Entity
     {
-        public Texture2D sprite;
+        protected Texture2D sprite;
 
         protected int health;
+        protected bool dead = false;
         protected float speed;
 
         protected Vector2 position;
@@ -36,6 +37,11 @@ namespace ShootanGaem
 
             position = pos;
             origin = new Vector2(spr.Width / 2, spr.Height / 2);
+        }
+
+        public Texture2D getSprite()
+        {
+            return sprite;
         }
 
         public void setSprite(Texture2D spr)
@@ -64,14 +70,10 @@ namespace ShootanGaem
             position.Y = y;
         }
 
+        //Health methods
         public void setHP(int hp)
         {
             health = hp;
-        }
-
-        public void takeDamage(int dmg)
-        {
-            health -= dmg;
         }
 
         public int getHealth()
@@ -79,11 +81,27 @@ namespace ShootanGaem
             return health;
         }
 
+        public void takeDamage(int dmg)
+        {
+            health -= dmg;
+        }
+
+        public void die()
+        {
+            dead = true;
+        }
+
+        public bool isDead()
+        {
+            return dead;
+        }
+
         public Rectangle getHitBox()
         {
             return new Rectangle((int)position.X, (int)position.Y, sprite.Width, sprite.Height);
         }
 
+        //Movement methods
         public void moveLeft()
         {
             position.X -= speed;
