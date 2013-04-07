@@ -7,7 +7,9 @@ Content\sprites\enemy.xnb
 Content\backgrounds\bg.xnb
 Content\MenuFont.xnb
 levels\level1.txt
+levels\level2.txt
 levels\level3.txt
 monsters\monster1.txt
 monsters\monster2.txt
 monsters\staticmonster.txt
+monsters\target.txt

@@ -111,8 +111,29 @@ namespace ShootanGaem
                                 case "BladeRotate":
                                     npc.manageBullets.addPattern(PatternManager.BladeRotate);
                                     break;
+                                case "Straight":
+                                    npc.manageBullets.addPattern(PatternManager.Straight);
+                                    break;
+                                case "TightBackAndForth":
+                                    npc.manageBullets.addPattern(PatternManager.TightBackAndForth);
+                                    break;
                             }
                         }
+                        break;
+                    case "TARGETS":
+                        switch (lineParts[1])
+                        {
+                            case "1":
+                                npc.targetsPlayer = true;
+                                break;
+                            case "0":
+                                npc.targetsPlayer = false;
+                                break;
+                        }
+                        break;
+                    case "FIREDELAY":
+                        Double.TryParse(lineParts[1], out dummy);
+                        npc.manageBullets.setDelay(dummy);
                         break;
                     case "ACTIONS":
                         for (int i = 1; i < lineParts.Count(); i++)

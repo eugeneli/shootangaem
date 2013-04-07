@@ -158,7 +158,11 @@ namespace ShootanGaem
                     for (int i = 0; i < activeEnemies.Count; i++)
                     {
                         if (!activeEnemies[i].isDead())
+                        {
+                            //Target center of player
+                            activeEnemies[i].setTarget(new Vector2(player.getPosition().X+player.getSprite().Width/2, player.getPosition().Y+player.getSprite().Height/2));
                             activeEnemies[i].doAction(gameTime.TotalGameTime.TotalMilliseconds);
+                        }
 
                         //Handle enemy bullet movement
                         activeEnemies[i].manageBullets.updatePosition();

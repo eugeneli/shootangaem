@@ -16,6 +16,7 @@ namespace ShootanGaem
         private Vector2 target;
 
         public bool hit = false;
+        public bool targetsPlayer = false;
 
         public NPC() : base() { }
 
@@ -58,7 +59,10 @@ namespace ShootanGaem
                     moveRight();
                     break;
                 case "FIRE":
-                    fire(currentTime);
+                    if (targetsPlayer)
+                        fire(currentTime, target);
+                    else
+                        fire(currentTime);
                     break;
             }
         }

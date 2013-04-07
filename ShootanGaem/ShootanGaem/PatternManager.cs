@@ -17,6 +17,8 @@ namespace ShootanGaem
         public static Pattern BladeRotate = new Pattern();
         public static Pattern Test = new Pattern();
 
+        public static Pattern TightBackAndForth = new Pattern();
+
         public static Pattern Straight = new Pattern();
 
         public PatternManager()
@@ -61,64 +63,99 @@ namespace ShootanGaem
 
             //Set values for straight pattern
             Straight.rotationAngle = (float)(-Math.PI/2);
+
+            //Targetted patterns
+            TightBackAndForth.rotationIncrement = (float)(Math.PI / 80);
+            TightBackAndForth.maxTick = 10;
+
         }
 
         //Should be better way of detecting which Pattern to do instead of nesting a bunch of conditionals :|
-        public void applyPattern(Bullet b, Pattern p)
+        //Alan, you should clean this up lol.
+        public void applyPattern(Bullet b, Pattern p, float rotAngle, bool targetted = false)
         {
-            if (p.once == true)
+            if (targetted) //Do targetted BackAndForth
             {
-                //Increments the rotation increment once to mess with bullet pattern
-                p.rotationIncrement += (float)0.05;
-                p.once = false;
-            }
-            if (p.swerve == true)
-            {
-                //Increments the rotation increment to mess with bullet pattern
-                p.rotationIncrement += (float)0.001;
-               // Console.WriteLine(p.rotationIncrement);
-                //b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
-            }
-            if (p.spaz == true)
-            {
-                //Increments the rotation increment to mess with bullet pattern
-                p.rotationIncrement += (float)1.5;
-                //b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
-            }
-            if (p.maxTick == -1) //Do this for Spiral/Cross pattern
-            {
-                b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
-                b.direction.X = (float)Math.Cos(b.rotationAngle);
-                b.direction.Y = (float)Math.Sin(b.rotationAngle);
+                if (p == TightBackAndForth)
+                {
+                    p.rotationAngle = rotAngle;
+                    if (p.tick >= 0 && p.tick < p.maxTick) //Shoot 10 bullets while rotating right
+                    {
+                        b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
+                        b.direction.X = (float)Math.Cos(b.rotationAngle);
+                        b.direction.Y = (float)Math.Sin(b.rotationAngle);
 
-                p.tick++;
+                        p.tick++;
 
+                        if (p.tick >= p.maxTick)
+                            p.tick *= -1;
+                    }
+                    else //Shoot 10 bullets while rotating left (and repeat)
+                    {
+                        b.rotationAngle = p.rotationAngle - (p.rotationIncrement * p.tick);
+                        b.direction.X = (float)Math.Cos(b.rotationAngle);
+                        b.direction.Y = (float)Math.Sin(b.rotationAngle);
 
+                        p.tick++;
+                    }
+                }
+                else if (p == Straight)
+                {
+                    b.rotationAngle = rotAngle;
+                    b.direction.X = (float)Math.Cos(b.rotationAngle);
+                    b.direction.Y = (float)Math.Sin(b.rotationAngle);
+                }
             }
-            else //Do back and forth pattern
+            else //Non targetted patterns below
             {
-                if (p.tick >= 0 && p.tick < p.maxTick) //Shoot 10 bullets while rotating right
+                if (p.once == true)
+                {
+                    //Increments the rotation increment once to mess with bullet pattern
+                    p.rotationIncrement += (float)0.05;
+                    p.once = false;
+                }
+                if (p.swerve == true)
+                {
+                    //Increments the rotation increment to mess with bullet pattern
+                    p.rotationIncrement += (float)0.001;
+                    // Console.WriteLine(p.rotationIncrement);
+                    //b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
+                }
+                if (p.spaz == true)
+                {
+                    //Increments the rotation increment to mess with bullet pattern
+                    p.rotationIncrement += (float)1.5;
+                    //b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
+                }
+                if (p.maxTick == -1) //Do this for Spiral/Cross pattern
                 {
                     b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
                     b.direction.X = (float)Math.Cos(b.rotationAngle);
                     b.direction.Y = (float)Math.Sin(b.rotationAngle);
 
                     p.tick++;
-
-                    if (p.tick >= p.maxTick)
-                        p.tick *= -1;
-
-
                 }
-                else //Shoot 10 bullets while rotating left (and repeat)
+                else //Do back and forth pattern
                 {
-                    b.rotationAngle = p.rotationAngle - (p.rotationIncrement * p.tick);
-                    b.direction.X = (float)Math.Cos(b.rotationAngle);
-                    b.direction.Y = (float)Math.Sin(b.rotationAngle);
+                    if (p.tick >= 0 && p.tick < p.maxTick) //Shoot 10 bullets while rotating right
+                    {
+                        b.rotationAngle = p.rotationAngle + (p.rotationIncrement * p.tick);
+                        b.direction.X = (float)Math.Cos(b.rotationAngle);
+                        b.direction.Y = (float)Math.Sin(b.rotationAngle);
 
-                    p.tick++;
+                        p.tick++;
 
-                    
+                        if (p.tick >= p.maxTick)
+                            p.tick *= -1;
+                    }
+                    else //Shoot 10 bullets while rotating left (and repeat)
+                    {
+                        b.rotationAngle = p.rotationAngle - (p.rotationIncrement * p.tick);
+                        b.direction.X = (float)Math.Cos(b.rotationAngle);
+                        b.direction.Y = (float)Math.Sin(b.rotationAngle);
+
+                        p.tick++;
+                    }
                 }
             }
         }

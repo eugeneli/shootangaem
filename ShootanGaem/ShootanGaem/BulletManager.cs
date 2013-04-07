@@ -69,6 +69,7 @@ namespace ShootanGaem
             }
         }
 
+        //Release bullet with pattern
         public void releaseBullet(Vector2 pos)
         {
             if (bullets.Count > 0)
@@ -78,11 +79,30 @@ namespace ShootanGaem
                 b.position = new Vector2((int)pos.X, (int)pos.Y);
                 b.setFired(true);
 
-                patternManager.applyPattern(b, attackPatterns[currentPattern]);
-
+                patternManager.applyPattern(b, attackPatterns[currentPattern], 0f);
+                
                 activeBullets.Add(b);
             }
             
+        }
+
+        //Release tracking bullet
+        public void releaseBullet(Vector2 pos, float rotAngle)
+        {
+            if (bullets.Count > 0)
+            {
+                Bullet b = bullets.Dequeue();
+
+                b.position = new Vector2((int)pos.X, (int)pos.Y);
+                b.setFired(true);
+
+                b.rotationAngle = rotAngle;
+
+                patternManager.applyPattern(b, attackPatterns[currentPattern], rotAngle, true);
+
+                activeBullets.Add(b);
+            }
+
         }
 
         public void recycleBullet(Bullet b)

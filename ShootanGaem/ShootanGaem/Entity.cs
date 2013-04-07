@@ -133,8 +133,25 @@ namespace ShootanGaem
         {
             if (manageBullets.fireDelayOver(currentTime))
             {
-                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2 -10, position.Y);
+                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2, position.Y + sprite.Height / 2);
                 manageBullets.releaseBullet(middleOfSprite);
+            }
+        }
+
+        //Fire tracking bullets
+        public void fire(double currentTime, Vector2 target)
+        {
+            if (manageBullets.fireDelayOver(currentTime))
+            {
+                Vector2 middleOfSprite = new Vector2(position.X + sprite.Width / 2, position.Y + sprite.Height / 2);
+
+                //calculate direction to target
+                float deltaX = target.X - middleOfSprite.X;
+                float deltaY = target.Y - middleOfSprite.Y;
+
+                float rotAngle = (float)(Math.Atan2(deltaY, deltaX));
+
+                manageBullets.releaseBullet(middleOfSprite, rotAngle);
             }
         }
 
