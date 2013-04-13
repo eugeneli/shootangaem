@@ -19,34 +19,30 @@ namespace ShootanGaem
         }
 
         private GraphicsDevice graphicsDevice;
-        private Random rand = new Random();
+        private Random rand;
         private List<Particle> particles = new List<Particle>();
 
-        public ParticleManager(GraphicsDevice g)
+        public ParticleManager(GraphicsDevice g, Random r)
         {
             graphicsDevice = g;
+            rand = r;
         }
 
-        public void generateParticles(Entity ent)
+        public void generateParticles(Entity ent, Vector2 particleSource, Vector2 particleDir, int numParticles, int particleLife)
         {
             Color[] colorData = new Color[ent.getSprite().Width * ent.getSprite().Height];
             ent.getSprite().GetData(colorData);
 
-            //Select 4 random pixels to create particle with
+            //Select random pixels to create particle with
             Color[] randColors = new Color[4];
-            randColors[0] = colorData[rand.Next(ent.getSprite().Width * ent.getSprite().Height - 1)];
-            randColors[1] = colorData[rand.Next(ent.getSprite().Width * ent.getSprite().Height - 1)];
-            randColors[2] = colorData[rand.Next(ent.getSprite().Width * ent.getSprite().Height - 1)];
-            randColors[3] = colorData[rand.Next(ent.getSprite().Width * ent.getSprite().Height - 1)];
+            for(int i = 0; i < 4; i++)
+                randColors[i] = colorData[rand.Next(ent.getSprite().Width * ent.getSprite().Height - 1)];
 
-            //Spawn particles at base of sprite
-            Vector2 pos = new Vector2(ent.getPosition().X+ent.getSprite().Width/2, ent.getPosition().Y+ent.getSprite().Height/2);
-
-            for (int i = 0; i < 5; i++)
-                particles.Add(createParticle(randColors, pos));
+            for (int i = 0; i < numParticles; i++)
+                particles.Add(createParticle(randColors, particleSource, particleDir, particleLife));
         }
 
-        public Particle createParticle(Color[] colors, Vector2 pos)
+        public Particle createParticle(Color[] colors, Vector2 pos, Vector2 particleDir, int particleLife)
         {
             Texture2D tex = new Texture2D(graphicsDevice, 2, 2);
             Particle p = new Particle();
@@ -56,7 +52,7 @@ namespace ShootanGaem
             p.particleSprite = tex;
 
             //Set life of particle
-            p.life = 50;
+            p.life = particleLife;
 
             //Set speed of particle
             p.speed = rand.Next(5, 10);
@@ -65,13 +61,7 @@ namespace ShootanGaem
             p.position = pos;
 
             //Set direction
-            p.direction = new Vector2();
-            if(rand.NextDouble() > .5)
-                p.direction.X = (float)rand.NextDouble() * 2;
-            else
-                p.direction.X = (float)rand.NextDouble() * -2;
-
-            p.direction.Y = 1f;
+            p.direction = particleDir;
 
             return p;
         }

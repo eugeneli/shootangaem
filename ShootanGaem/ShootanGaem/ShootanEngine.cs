@@ -15,6 +15,7 @@ namespace ShootanGaem
         GraphicsDevice graphicsDevice;
         ContentManager Content;
         KeyboardState keyboardState;
+        private static Random rand = new Random();
 
         private int GAME_WIDTH;
         private int GAME_HEIGHT;
@@ -32,7 +33,7 @@ namespace ShootanGaem
             Content = cm;
             graphicsDevice = gd;
 
-            particleManager = new ParticleManager(gd);
+            particleManager = new ParticleManager(gd, rand);
         }
 
         //Creates player object
@@ -118,13 +119,49 @@ namespace ShootanGaem
                                 activeEnemies[c].takeDamage(bullets[i].getDamage());
                                 activeEnemies[c].hit = true;
 
-                                //Generate particles
-                                particleManager.generateParticles(activeEnemies[c]);
+                                //Spawn particles in middle of sprite
+                                Vector2 particlePos = new Vector2(activeEnemies[c].getPosition().X + activeEnemies[c].getSprite().Width / 2, activeEnemies[c].getPosition().Y + activeEnemies[c].getSprite().Height / 2);
 
-                                //If enemy has <= 0 hp, mark as dead
+                                //Shoot particles down
+                                Vector2 particleDir = new Vector2();
+                                if (rand.NextDouble() > .5)
+                                    particleDir.X = (float)rand.NextDouble() * 2;
+                                else
+                                    particleDir.X = (float)rand.NextDouble() * -2;
+
+                                particleDir.Y = 1f;
+
+                                //Generate particles
+                                particleManager.generateParticles(activeEnemies[c], particlePos, particleDir, 5, 25);
+
+                                //If enemy has <= 0 hp, mark as dead and create particle explosion
                                 if (activeEnemies[c].getHealth() <= 0)
                                 {
                                     activeEnemies[c].die();
+
+                                    //Spawn particles in middle of sprite
+                                    Vector2 deadParticlePos = new Vector2(activeEnemies[c].getPosition().X + activeEnemies[c].getSprite().Width / 2, activeEnemies[c].getPosition().Y + activeEnemies[c].getSprite().Height / 2);
+
+                                    for (int currPart = 0; currPart < 50; currPart++)
+                                    {
+                                        //Shoot particles randomly
+                                        Vector2 deadParticleDir = new Vector2();
+                                        if (rand.NextDouble() > .5)
+                                            deadParticleDir.X = (float)rand.NextDouble() * 2;
+                                        else
+                                            deadParticleDir.X = (float)rand.NextDouble() * -2;
+
+                                        double randY = rand.NextDouble();
+                                        if (randY > .33 && randY < .66)
+                                            deadParticleDir.Y = (float)rand.NextDouble() * 2;
+                                        else if (randY < .33)
+                                            deadParticleDir.Y = 0;
+                                        else
+                                            deadParticleDir.Y = (float)rand.NextDouble() * -2;
+
+                                        //Generate particles
+                                        particleManager.generateParticles(activeEnemies[c], deadParticlePos, deadParticleDir, 1, 100);
+                                    }
                                 }
 
                                 //Recycle bullet when it hits an enemy
