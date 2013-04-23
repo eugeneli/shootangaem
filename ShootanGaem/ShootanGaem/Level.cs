@@ -63,7 +63,6 @@ namespace ShootanGaem
 
             //npc data
             Vector2 pos = new Vector2();
-            int hp;
             Queue<string> actions = new Queue<string>();
 
             while ((line = npcData.ReadLine()) != null)

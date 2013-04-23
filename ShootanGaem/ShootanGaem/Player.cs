@@ -13,6 +13,9 @@ namespace ShootanGaem
         {
         }
 
-
+        public void setSpeed(int spd)
+        {
+            speed = spd;
+        }
     }
 }

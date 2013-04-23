@@ -49,12 +49,19 @@ namespace ShootanGaem
             player.manageBullets.setDelay(ms);
         }
 
+        //Changes player's speed
+        public void setPlayerSpeed(int spd)
+        {
+            player.setSpeed(spd);
+        }
+
         //Add bullets to player
         public void addPlayerBullets(Texture2D sprite, int numBullets, Color sprColor, int dmg, float spd)
         {
             player.addBullets(sprite, numBullets, sprColor, dmg, spd);
         }
 
+        //Add bullet patterns to player
         public void addPlayerPattern(Pattern p)
         {
             player.addPattern(p);

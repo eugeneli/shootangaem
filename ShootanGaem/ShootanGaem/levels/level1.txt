@@ -1,9 +1,6 @@
 NEW_WAVE
-monster1.txt
-monster2.txt
-END_WAVE
-NEW_WAVE
-monster1.txt
-monster2.txt
-staticmonster.txt
+monster4.txt
+monster5.txt
+monster6.txt
+monster7.txt
 END_WAVE

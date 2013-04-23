@@ -21,8 +21,9 @@ namespace ShootanGaem
         StreamReader level;
         ShootanEngine Engine;
 
-        //background
+        //backgrounds
         Background background;
+        Background level1bg;
 
         //UI objects
         SGButtonContainer mainMenu;
@@ -37,6 +38,11 @@ namespace ShootanGaem
         SGButton level3;
         SGButton backButton;
 
+        SGButton mode1;
+        SGButton mode2;
+        SGButton mode3;
+
+        //Keep track of game state
         enum GameState
         {
             MainMenu,
@@ -69,6 +75,14 @@ namespace ShootanGaem
             //scrolling background
             background = new Background(Content.Load<Texture2D>(@"backgrounds\bg"), graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             background.setScroll("DOWNLEFT");
+
+            //Level 1 background
+            Texture2D levelBg = Content.Load<Texture2D>(@"backgrounds\level1bg");
+            level1bg = new Background(levelBg, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            level1bg.setScroll("UP");
+            level1bg.setScrollSpeed(10);
+            level1bg.setReverse(false);
+            level1bg.setViewport(new Rectangle(0, levelBg.Height - 768, 1024, 768));
 
             //Create engine
             Engine = new ShootanEngine(GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, Content);
@@ -122,6 +136,16 @@ namespace ShootanGaem
             levelMenu.add(level2);
             levelMenu.add(level3);
             levelMenu.add(backButton);
+
+            //Mode selection buttons
+            mode1 = new SGButton(Content.Load<Texture2D>(@"menu\mode1up"), Content.Load<Texture2D>(@"menu\mode1down"), new Rectangle(340, 300, 100, 100), Content.Load<SpriteFont>("MenuFont"));
+            mode1.setText("");
+
+            mode2 = new SGButton(Content.Load<Texture2D>(@"menu\mode2up"), Content.Load<Texture2D>(@"menu\mode2down"), new Rectangle(450, 300, 100, 100), Content.Load<SpriteFont>("MenuFont"));
+            mode2.setText("");
+
+            mode3 = new SGButton(Content.Load<Texture2D>(@"menu\mode3up"), Content.Load<Texture2D>(@"menu\mode3down"), new Rectangle(560, 300, 100, 100), Content.Load<SpriteFont>("MenuFont"));
+            mode3.setText("");
         }
 
         protected override void UnloadContent()
@@ -195,18 +219,65 @@ namespace ShootanGaem
 
                     break;
                 case GameState.InitializeLevel:
-                    Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
-                    Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange, 10, 20);
-                    Engine.addPlayerPattern(PatternManager.Straight);
-                    Engine.setPlayerDelay(50);
+                    //Update Background
+                    level1bg.update(gameTime);
 
-                    //Load Level
-                    Engine.loadLevel(level);
+                    //Mode selection
+                    mode1.update(Mouse.GetState());
+                    mode2.update(Mouse.GetState());
+                    mode3.update(Mouse.GetState());
 
-                    //Change game state
-                    CurrentGameState = GameState.InGame;
+                    if (mode1.clicked)
+                    {
+                        Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
+                        Engine.addPlayerPattern(PatternManager.Straight);
+                        Engine.setPlayerDelay(50);
+
+                        Engine.setPlayerSpeed(13);
+                        Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange, 15, 20);
+
+                        //Load Level
+                        Engine.loadLevel(level);
+
+                        //Change game state
+                        CurrentGameState = GameState.InGame;
+                    }
+                    else if (mode2.clicked)
+                    {
+                        Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
+                        Engine.addPlayerPattern(PatternManager.Straight);
+                        Engine.setPlayerDelay(50);
+
+                        Engine.setPlayerSpeed(13);
+                        Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange, 7, 20);
+
+                        //Load Level
+                        Engine.loadLevel(level);
+
+                        //Change game state
+                        CurrentGameState = GameState.InGame;
+                    }
+                    else if (mode3.clicked)
+                    {
+                        Engine.createPlayer(Content.Load<Texture2D>(@"sprites\player_default"), new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, (graphics.PreferredBackBufferHeight - 120)));
+                        Engine.addPlayerPattern(PatternManager.Straight);
+                        Engine.setPlayerDelay(50);
+
+                        Engine.setPlayerSpeed(8);
+                        Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange, 15, 30);
+
+                        //Load Level
+                        Engine.loadLevel(level);
+
+                        //Change game state
+                        CurrentGameState = GameState.InGame;
+                    }
+
                     break;
                 case GameState.InGame:
+                    //Update Background
+                    level1bg.update(gameTime);
+
                     Engine.update(gameTime);
                     break;
             }
@@ -218,11 +289,10 @@ namespace ShootanGaem
         {
             GraphicsDevice.Clear(Color.Black);
 
+            spriteBatch.Begin();
             switch (CurrentGameState)
             {
-                case GameState.MainMenu:
-                    spriteBatch.Begin();
-                    
+                case GameState.MainMenu:     
                     //Draw background image
                     background.draw(spriteBatch);
 
@@ -230,18 +300,25 @@ namespace ShootanGaem
                     mainMenu.draw(spriteBatch);
                     levelMenu.draw(spriteBatch);
 
-                    spriteBatch.End();
                     break;
                 case GameState.InitializeLevel:
-                    //?? loading screen perhaps?
+                    //Draw background image
+                    level1bg.draw(spriteBatch);
+
+                    mode1.draw(spriteBatch);
+                    mode2.draw(spriteBatch);
+                    mode3.draw(spriteBatch);
+
                     break;
                 case GameState.InGame:
-                    spriteBatch.Begin();
+                    //Draw background image
+                    level1bg.draw(spriteBatch);
+
                     Engine.draw(spriteBatch);
-                    spriteBatch.End();
+
                     break;
             }
-
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

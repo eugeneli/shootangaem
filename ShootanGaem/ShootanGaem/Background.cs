@@ -10,10 +10,12 @@ namespace ShootanGaem
     class Background
     {
         private Rectangle viewPort;
+        private Rectangle origViewPort;
         private Texture2D background;
         private Vector2 direction; //Scrolling direction
         private int screenWidth;
         private int screenHeight;
+        private int scrollSpeed = 1;
         private bool reverse = true;
 
         private double prevUpdate = 0;
@@ -25,7 +27,8 @@ namespace ShootanGaem
             screenWidth = width;
             screenHeight = height;
 
-            viewPort = new Rectangle(viewPort.Width / 2, viewPort.Height / 2, width, height);
+            viewPort = new Rectangle(0, 0, width, height);
+            origViewPort = new Rectangle(0, 0, width, height);
             direction = new Vector2(0, 1);
         }
 
@@ -35,8 +38,8 @@ namespace ShootanGaem
 
             if (currentTime - prevUpdate > updateDelay || prevUpdate == 0)
             {
-                viewPort.X += (int)direction.X;
-                viewPort.Y += (int)direction.Y;
+                viewPort.X += (int)direction.X * scrollSpeed;
+                viewPort.Y += (int)direction.Y * scrollSpeed;
 
                 prevUpdate = currentTime;
 
@@ -45,12 +48,10 @@ namespace ShootanGaem
                     if (viewPort.X + screenWidth > background.Width || viewPort.Y + screenHeight > background.Height || viewPort.X < 0 || viewPort.Y < 0)
                         direction *= -1;
                 }
-                else
+                else //If don't reverse viewport, then loop
                 {
-                    if (viewPort.X > screenWidth)
-                        viewPort.X = 0;
-                    if (viewPort.Y > screenHeight)
-                        viewPort.Y = 0;
+                    if (viewPort.Y <= 0)
+                        viewPort = origViewPort;
                 }
             }
 
@@ -74,6 +75,22 @@ namespace ShootanGaem
                     direction.Y = 1;
                     break;
             }
+        }
+
+        public void setScrollSpeed(int spd)
+        {
+            scrollSpeed = spd;
+        }
+
+        public void setViewport(Rectangle rect)
+        {
+            viewPort = rect;
+            origViewPort = viewPort;
+        }
+
+        public void setReverse(bool doRev)
+        {
+            reverse = doRev;
         }
 
         public void draw(SpriteBatch spriteBatch)
