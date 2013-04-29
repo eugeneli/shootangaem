@@ -1,3 +1,10 @@
+DIALOGUE level1dialogue1.txt
+NEW_WAVE
+monster1.txt
+monster2.txt
+monster3.txt
+END_WAVE
+DIALOGUE level1dialogue2.txt
 NEW_WAVE
 monster4.txt
 monster5.txt

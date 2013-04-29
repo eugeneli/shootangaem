@@ -15,10 +15,12 @@ namespace ShootanGaem
         GraphicsDevice graphicsDevice;
         ContentManager Content;
         KeyboardState keyboardState;
+        KeyboardState prevKeyboardState;
         private static Random rand = new Random();
 
         private int GAME_WIDTH;
         private int GAME_HEIGHT;
+        private bool gameRunning;
 
         private Level level;
         private Player player;
@@ -68,13 +70,36 @@ namespace ShootanGaem
         }
 
         //Load Level from file
-        public void loadLevel(StreamReader levelData)
+        public void loadLevel(StreamReader newLevelData)
         {
-            level = new Level(levelData, Content);
+            level = new Level(newLevelData, Content);
+
+            //Populate activeEnemies for initial run
+            while (!level.isCurrentWaveEmpty())
+            {
+                activeEnemies.Add(level.getEnemy());
+            }
+
+            level.discardCurrentWave();
+        }
+
+        //Check if game is currently running
+        public bool gameIsRunning()
+        {
+            return gameRunning;
+        }
+
+        //Reset level
+        public void reset()
+        {
+            level.reset();
+            gameRunning = false;
+            activeEnemies = new List<NPC>();
         }
 
         public void update(GameTime gameTime)
         {
+            gameRunning = true;
             keyboardState = Keyboard.GetState();
 
             /* --------------
@@ -82,19 +107,19 @@ namespace ShootanGaem
              * --------------
              */
             //Player movement
-            if (keyboardState.IsKeyDown(Keys.Up) && player.getPosition().Y > 0)
+            if (keyboardState.IsKeyDown(Keys.Up) && player.getPosition().Y > 0 && !player.isDead())
             {
                 player.moveUp();
             }
-            if (keyboardState.IsKeyDown(Keys.Down) && player.getPosition().Y+player.getSprite().Height < GAME_HEIGHT)
+            if (keyboardState.IsKeyDown(Keys.Down) && player.getPosition().Y + player.getSprite().Height < GAME_HEIGHT && !player.isDead())
             {
                 player.moveDown();
             }
-            if (keyboardState.IsKeyDown(Keys.Left) && player.getPosition().X > 0)
+            if (keyboardState.IsKeyDown(Keys.Left) && player.getPosition().X > 0 && !player.isDead())
             {
                 player.moveLeft();
             }
-            if (keyboardState.IsKeyDown(Keys.Right) && player.getPosition().X + player.getSprite().Width < GAME_WIDTH)
+            if (keyboardState.IsKeyDown(Keys.Right) && player.getPosition().X + player.getSprite().Width < GAME_WIDTH && !player.isDead())
             {
                 player.moveRight();
             }
@@ -181,93 +206,173 @@ namespace ShootanGaem
 
 
             /* --------------
-             * NPC Updates
+             * Event Updates
              * --------------
              */
-            if (!level.isLevelOver() || activeEnemies.Count > 0)
+            string currentEvent = level.getCurrentEvent();
+            if (currentEvent == "DIALOGUE")
             {
-                if (activeEnemies.Count == 0)
-                {
-                    //If there are currently no enemies, spawn a new wave
-                    while (!level.isCurrentWaveEmpty())
-                    {
-                        activeEnemies.Add(level.getEnemy());
-                    }
+                Dialogue currentDialogue = level.getDialogue();
 
-                    //Since we've retrieved all the enemies in the wave, we can remove it from Level's queue
-                    level.discardCurrentWave();
+                if (!currentDialogue.isDialogueOver())
+                {
+                    currentDialogue.update();
+
+                    if (keyboardState.IsKeyDown(Keys.Z) && prevKeyboardState.IsKeyUp(Keys.Z))
+                    {
+                        currentDialogue.nextLine();
+                    }
+                    prevKeyboardState = keyboardState;
                 }
-                else //If there are alive active enemies, let them do their actions
+                else
                 {
-                    for (int i = 0; i < activeEnemies.Count; i++)
-                    {
-                        if (!activeEnemies[i].isDead())
-                        {
-                            //Target center of player
-                            activeEnemies[i].setTarget(new Vector2(player.getPosition().X+player.getSprite().Width/2, player.getPosition().Y+player.getSprite().Height/2));
-                            activeEnemies[i].doAction(gameTime.TotalGameTime.TotalMilliseconds);
-                        }
+                    level.discardCurrentDialogue();
 
-                        //Handle enemy bullet movement
-                        activeEnemies[i].manageBullets.updatePosition();
-
-                        List<Bullet> enemyBullets = activeEnemies[i].manageBullets.getActiveBullets();
-                        for (int c = 0; c < enemyBullets.Count; c++)
-                        {
-                            //If bullet is out of bounds, recycle it
-                            if (enemyBullets[c].position.X < 0 || enemyBullets[c].position.Y < 0 || enemyBullets[c].position.X > GAME_WIDTH || enemyBullets[c].position.Y > GAME_HEIGHT)
-                                activeEnemies[i].manageBullets.recycleBullet(enemyBullets[c]);
-                        }
-
-                        //If all of NPC's bullets are out of screen and it's dead, remove from activeEnemies
-                        if (activeEnemies[i].manageBullets.getActiveBullets().Count == 0 && activeEnemies[i].isDead())
-                        {
-                            activeEnemies.Remove(activeEnemies[i]);
-                            i--;
-                        }
-                    }
+                    //Move on to next event
+                    level.nextEvent();
                 }
             }
+            else if(currentEvent == "WAVE")
+            {
+                if (!level.isLevelOver() || activeEnemies.Count > 0)
+                {
+                    if (activeEnemies.Count == 0)
+                    {
+                        //If there are currently no enemies, spawn a new wave
+                        while (!level.isCurrentWaveEmpty())
+                        {
+                            activeEnemies.Add(level.getEnemy());
+                        }
 
-            //Update particles, if any
-            particleManager.updateParticles();
+                        //Since we've retrieved all the enemies in the wave, we can remove it from Level's queue
+                        level.discardCurrentWave();
+
+                        //Move on to next event
+                        level.nextEvent();
+                    }
+                    else //If there are alive active enemies, let them do their actions
+                    {
+                        for (int i = 0; i < activeEnemies.Count; i++)
+                        {
+                            if (!activeEnemies[i].isDead())
+                            {
+                                //Target center of player
+                                activeEnemies[i].setTarget(new Vector2(player.getPosition().X + player.getSprite().Width / 2, player.getPosition().Y + player.getSprite().Height / 2));
+                                activeEnemies[i].doAction(gameTime.TotalGameTime.TotalMilliseconds);
+
+                                //If NPC is out of window, mark as dead
+                                if (activeEnemies[i].getPosition().X < 0 || activeEnemies[i].getPosition().X > GAME_WIDTH || activeEnemies[i].getPosition().Y < 0 || activeEnemies[i].getPosition().Y > GAME_HEIGHT)
+                                    activeEnemies[i].die();
+                            }
+
+                            //Handle enemy bullet movement
+                            activeEnemies[i].manageBullets.updatePosition();
+
+                            List<Bullet> enemyBullets = activeEnemies[i].manageBullets.getActiveBullets();
+                            for (int c = 0; c < enemyBullets.Count; c++)
+                            {
+                                //If bullet hits player, reset level
+                                if (player.isDead() && particleManager.isEmpty())
+                                    reset();
+
+                                if (enemyBullets[c].getHitBox().Intersects(player.getHitBox()))
+                                {
+                                    //Spawn particles in middle of player
+                                    Vector2 deadParticlePos = new Vector2(player.getPosition().X + player.getSprite().Width / 2, player.getPosition().Y + player.getSprite().Height / 2);
+
+                                    for (int currPart = 0; currPart < 100; currPart++)
+                                    {
+                                        //Shoot particles randomly
+                                        Vector2 deadParticleDir = new Vector2();
+                                        if (rand.NextDouble() > .5)
+                                            deadParticleDir.X = (float)rand.NextDouble() * 2;
+                                        else
+                                            deadParticleDir.X = (float)rand.NextDouble() * -2;
+
+                                        double randY = rand.NextDouble();
+                                        if (randY > .33 && randY < .66)
+                                            deadParticleDir.Y = (float)rand.NextDouble() * 2;
+                                        else if (randY < .33)
+                                            deadParticleDir.Y = 0;
+                                        else
+                                            deadParticleDir.Y = (float)rand.NextDouble() * -2;
+
+                                        //Generate particles
+                                        particleManager.generateParticles(player, deadParticlePos, deadParticleDir, 1, 300);
+
+                                        //Remove player from screen & mark as dead
+                                        player.setPosition(-50, -50);
+                                        player.die();
+                                    }
+                                }
+
+                                //If bullet is out of bounds, recycle it
+                                if (enemyBullets[c].position.X < 0 || enemyBullets[c].position.Y < 0 || enemyBullets[c].position.X > GAME_WIDTH || enemyBullets[c].position.Y > GAME_HEIGHT)
+                                    activeEnemies[i].manageBullets.recycleBullet(enemyBullets[c]);
+                            }
+
+                            //If all of NPC's bullets are out of screen and it's dead, remove from activeEnemies
+                            if (activeEnemies.Count > 0 && activeEnemies[i].manageBullets.getActiveBullets().Count == 0 && activeEnemies[i].isDead())
+                            {
+                                activeEnemies.Remove(activeEnemies[i]);
+                                i--;
+                            }
+                        }
+                    }
+                }
+
+                //Update particles, if any
+                particleManager.updateParticles();
+            }
         }
 
         public void draw(SpriteBatch spriteBatch)
         {
-            //Draw player and their bullets
-            spriteBatch.Draw(player.getSprite(), player.getPosition(), Color.White);
-
-            List<Bullet> bullets = player.manageBullets.getActiveBullets();
-            for (int i = 0; i < bullets.Count; i++)
+            string currentEvent = level.getCurrentEvent();
+            if (currentEvent == "DIALOGUE")
             {
-                spriteBatch.Draw(bullets[i].sprite, bullets[i].position, null, bullets[i].spriteColor, bullets[i].rotationAngle, bullets[i].origin, 1.0f, SpriteEffects.None, 0f);
+                Dialogue currentDialogue = level.getDialogue();
+
+                if(!currentDialogue.isDialogueOver())
+                    currentDialogue.draw(spriteBatch);
             }
-
-            //Draw enemies and their bullets
-            for (int i = 0; i < activeEnemies.Count; i++)
+            else if (currentEvent == "WAVE")
             {
-                //Gray the sprite if enemy was hit
-                if (!activeEnemies[i].isDead() && activeEnemies[i].hit)
-                {
-                    spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.Black);
-                    activeEnemies[i].hit = false;
-                }
-                else if (!activeEnemies[i].isDead() && !activeEnemies[i].hit)
-                    spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.White);
 
-                List<Bullet> enemyBullets = activeEnemies[i].manageBullets.getActiveBullets();
-                for (int c = 0; c < enemyBullets.Count; c++)
-                {
-                    spriteBatch.Draw(enemyBullets[c].sprite, enemyBullets[c].position, null, enemyBullets[c].spriteColor, enemyBullets[c].rotationAngle, enemyBullets[c].origin, 1.0f, SpriteEffects.None, 0f);
-                }
-            }
+                //Draw player and their bullets
+                spriteBatch.Draw(player.getSprite(), player.getPosition(), Color.White);
 
-            //Draw particles, if any
-            List<ParticleManager.Particle> particles = particleManager.getParticles();
-            for (int i = 0; i < particles.Count; i++)
-            {
-                spriteBatch.Draw(particles[i].particleSprite, particles[i].position, Color.White);
+                List<Bullet> bullets = player.manageBullets.getActiveBullets();
+                for (int i = 0; i < bullets.Count; i++)
+                {
+                    spriteBatch.Draw(bullets[i].sprite, bullets[i].position, null, bullets[i].spriteColor, bullets[i].rotationAngle, bullets[i].origin, 1.0f, SpriteEffects.None, 0f);
+                }
+
+                //Draw enemies and their bullets
+                for (int i = 0; i < activeEnemies.Count; i++)
+                {
+                    //Gray the sprite if enemy was hit
+                    if (!activeEnemies[i].isDead() && activeEnemies[i].hit)
+                    {
+                        spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.Black);
+                        activeEnemies[i].hit = false;
+                    }
+                    else if (!activeEnemies[i].isDead() && !activeEnemies[i].hit)
+                        spriteBatch.Draw(activeEnemies[i].getSprite(), activeEnemies[i].getPosition(), Color.White);
+
+                    List<Bullet> enemyBullets = activeEnemies[i].manageBullets.getActiveBullets();
+                    for (int c = 0; c < enemyBullets.Count; c++)
+                    {
+                        spriteBatch.Draw(enemyBullets[c].sprite, enemyBullets[c].position, null, enemyBullets[c].spriteColor, enemyBullets[c].rotationAngle, enemyBullets[c].origin, 1.0f, SpriteEffects.None, 0f);
+                    }
+                }
+
+                //Draw particles, if any
+                List<ParticleManager.Particle> particles = particleManager.getParticles();
+                for (int i = 0; i < particles.Count; i++)
+                {
+                    spriteBatch.Draw(particles[i].particleSprite, particles[i].position, Color.White);
+                }
             }
         }
 

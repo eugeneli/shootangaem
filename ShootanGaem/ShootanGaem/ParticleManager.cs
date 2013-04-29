@@ -66,6 +66,7 @@ namespace ShootanGaem
             return p;
         }
 
+        //Update particle positions
         public void updateParticles()
         {
             for (int i = 0; i < particles.Count; i++)
@@ -86,5 +87,11 @@ namespace ShootanGaem
         {
             return particles;
         }
+
+        public bool isEmpty()
+        {
+            return (particles.Count == 0);
+        }
+
     }
 }

@@ -14,13 +14,13 @@ namespace ShootanGaem
         struct Wave
         {
             public Queue<NPC> waveEnemies;
-            public int waveCount;
         }
 
         private ContentManager Content;
 
+        private Queue<String> events = new Queue<String>();
         private Queue<Wave> waves = new Queue<Wave>();
-        private int enemySpawnDelay = 2000; //Delay between when new enemies are spawned
+        private Queue<Dialogue> dialogues = new Queue<Dialogue>();
         private int numWaves;
 
         //used to temporarily hold wave data before enqueuing
@@ -33,19 +33,30 @@ namespace ShootanGaem
             string line;
             while ((line = levelData.ReadLine()) != null)
             {
-                if (line == "NEW_WAVE")
+                char[] spaceDelim = new char[] { ' ' };
+                string[] lineParts = line.Split(spaceDelim);
+
+                switch (lineParts[0])
                 {
-                    temp_wave = new Wave();
-                    temp_wave.waveEnemies = new Queue<NPC>();
-                }
-                else if (line == "END_WAVE")
-                {
-                    waves.Enqueue(temp_wave);
-                }
-                else
-                {
-                    StreamReader sr = new StreamReader(@"monsters\" + line);
-                    temp_wave.waveEnemies.Enqueue(createNPC(sr));
+                    case "NEW_WAVE":
+                        events.Enqueue("WAVE");
+
+                        temp_wave = new Wave();
+                        temp_wave.waveEnemies = new Queue<NPC>();
+                        break;
+                    case "END_WAVE":
+                        waves.Enqueue(temp_wave);
+                        break;
+                    case "DIALOGUE":
+                        events.Enqueue("DIALOGUE");
+
+                        StreamReader dialogueStream = new StreamReader(@"dialogue\" + lineParts[1]);
+                        dialogues.Enqueue(new Dialogue(dialogueStream, Content.Load<SpriteFont>("MenuFont"), cm));
+                        break;
+                    default:
+                        StreamReader monsterStream = new StreamReader(@"monsters\" + line);
+                        temp_wave.waveEnemies.Enqueue(createNPC(monsterStream));
+                        break;
                 }
             }
         }
@@ -74,6 +85,9 @@ namespace ShootanGaem
                 {
                     case "SPRITE":
                         npc.setSprite(Content.Load<Texture2D>(@"sprites\" + lineParts[1]));
+                        break;
+                    case "BULLET":
+                        npc.addBullets(Content.Load<Texture2D>(@"sprites\"+ lineParts[1]), 100, Color.Orange);
                         break;
                     case "XPOS":
                         Double.TryParse(lineParts[1], out dummy);
@@ -145,11 +159,11 @@ namespace ShootanGaem
 
             npc.setPosition(pos);
             npc.setActions(actions);
-            npc.addBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.Orange);
 
             return npc;
         }
 
+        //Have all waves in the level been spawned?
         public bool isLevelOver()
         {
             return (waves.Count == 0);
@@ -183,15 +197,36 @@ namespace ShootanGaem
             return (waves.Peek().waveEnemies.Count == 0);
         }
 
-        //Monster spawning delays
-        public void setSpawnDelay(int ms)
+        //Reset level
+        public void reset()
         {
-            enemySpawnDelay = ms;
+            events = new Queue<String>();
+            waves = new Queue<Wave>();
+            dialogues = new Queue<Dialogue>();
         }
 
-        public double getSpawnDelay()
+        //Check which event is currently happening
+        public string getCurrentEvent()
         {
-            return enemySpawnDelay;
+            return events.Peek();
+        }
+
+        //Move on to next event
+        public void nextEvent()
+        {
+            events.Dequeue();
+        }
+
+        //Get dialogue
+        public Dialogue getDialogue()
+        {
+            return dialogues.Peek();
+        }
+
+        //Dequeue dialogue
+        public void discardCurrentDialogue()
+        {
+            dialogues.Dequeue();
         }
     }
 }

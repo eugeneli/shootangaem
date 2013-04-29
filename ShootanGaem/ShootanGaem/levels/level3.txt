@@ -1,3 +1,8 @@
 NEW_WAVE
-staticmonster.txt
+3monster3.txt
+3monster4.txt
+END_WAVE
+NEW_WAVE
+3monster1.txt
+3monster2.txt
 END_WAVE

@@ -1,6 +1,6 @@
 ﻿SPRITE enemy
 BULLET round_bullet
-XPOS 100
+XPOS 200
 YPOS 50
 HP 200
 PATTERN BackAndForth

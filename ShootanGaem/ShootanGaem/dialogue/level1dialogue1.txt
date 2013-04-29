@@ -1,0 +1,14 @@
+SPEAKER LEFT playerFace
+SPEAKER RIGHT villianFace
+SPEAKER RIGHT shawty
+DIALOGUE_BEGIN
+0 o bby i luv free software
+2 me 2 :)))))))))
+0 can i free ur software 2nite call me maybe???
+2 ogosh~~~
+1 BEHOLD IT IS I. APPEL.
+1 Appel casts PROPRIETARY LICENSING
+2 NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+0 BABY COME BACK
+1 fite me
+0 BRING IT!

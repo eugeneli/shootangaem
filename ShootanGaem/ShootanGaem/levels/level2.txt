@@ -1,3 +1,12 @@
 NEW_WAVE
-target.txt
+2monster1.txt
+2monster2.txt
+END_WAVE
+NEW_WAVE
+2monster3.txt
+2monster4.txt
+END_WAVE
+NEW_WAVE
+2monster5.txt
+2monster6.txt
 END_WAVE

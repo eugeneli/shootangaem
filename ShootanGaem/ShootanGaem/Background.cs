@@ -21,6 +21,7 @@ namespace ShootanGaem
         private double prevUpdate = 0;
         private double updateDelay = 30;
         
+        //generic background
         public Background(Texture2D bg, int width, int height)
         {
             background = bg;
@@ -30,6 +31,22 @@ namespace ShootanGaem
             viewPort = new Rectangle(0, 0, width, height);
             origViewPort = new Rectangle(0, 0, width, height);
             direction = new Vector2(0, 1);
+        }
+
+        //Level background
+        public Background(Texture2D bg, int width, int height, bool level)
+        {
+            background = bg;
+            screenWidth = width;
+            screenHeight = height;
+
+            viewPort = new Rectangle(0, 0, width, height);
+            origViewPort = new Rectangle(0, 0, width, height);
+            direction = new Vector2(0, 1);
+
+            setScroll("UP");
+            setScrollSpeed(10);
+            setReverse(false);
         }
 
         public void update(GameTime gametime)
