@@ -1,4 +1,4 @@
-﻿SPRITE enemy
+﻿SPRITE shibaenemy
 BULLET orangeround
 XPOS 0
 YPOS 50
