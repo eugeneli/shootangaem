@@ -1,5 +1,5 @@
 ﻿SPRITE enemy
-BULLET round_bullet
+BULLET orangeround
 XPOS 0
 YPOS 50
 HP 200

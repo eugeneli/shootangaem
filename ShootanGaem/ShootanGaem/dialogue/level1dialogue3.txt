@@ -1,0 +1,9 @@
+SPEAKER LEFT playerFace
+SPEAKER RIGHT shawty
+SPEAKER RIGHT villianFaceBadApple
+DIALOGUE_BEGIN
+2 Stop! You cannot win!
+0 Not until the neckbeard's free!
+1 DID SOMEBODY SAY FREE SOFTWARE?!
+2 SHUT UP STALLMAN
+0 SHUT UP STALLMAN

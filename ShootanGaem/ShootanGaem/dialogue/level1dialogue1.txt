@@ -7,7 +7,7 @@ DIALOGUE_BEGIN
 0 can i free ur software 2nite call me maybe???
 2 ogosh~~~
 1 BEHOLD IT IS I. APPEL.
-1 Appel casts PROPRIETARY LICENSING
+1 Appel uses NON-FREE SOFTWARE
 2 NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 0 BABY COME BACK
 1 fite me

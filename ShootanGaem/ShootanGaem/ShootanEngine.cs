@@ -210,7 +210,9 @@ namespace ShootanGaem
              * --------------
              */
             string currentEvent = level.getCurrentEvent();
-            if (currentEvent == "DIALOGUE")
+            if (currentEvent == "END_LEVEL")
+                reset();
+            else if (currentEvent == "DIALOGUE")
             {
                 Dialogue currentDialogue = level.getDialogue();
 
@@ -232,7 +234,7 @@ namespace ShootanGaem
                     level.nextEvent();
                 }
             }
-            else if(currentEvent == "WAVE")
+            else if (currentEvent == "WAVE")
             {
                 //Godmode
                 if (keyboardState.IsKeyDown(Keys.G) && prevKeyboardState.IsKeyUp(Keys.G))

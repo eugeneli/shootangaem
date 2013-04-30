@@ -15,3 +15,14 @@ NEW_WAVE
 2monster5.txt
 2monster6.txt
 END_WAVE
+DIALOGUE level2dialogue2.txt
+NEW_WAVE
+3monster1.txt
+3monster2.txt
+3monster3.txt
+3monster4.txt
+shibaboss.txt
+END_WAVE
+END_LEVEL
+NEW_WAVE
+END_WAVE

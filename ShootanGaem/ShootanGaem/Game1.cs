@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 namespace ShootanGaem
 {
@@ -84,7 +85,7 @@ namespace ShootanGaem
             level1bg = new Background(level1BgTexture, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, true);
             level1bg.setViewport(new Rectangle(0, level1BgTexture.Height - 768, 1024, 768));
 
-            Texture2D level2BgTexture = Content.Load<Texture2D>(@"backgrounds\level1bg");
+            Texture2D level2BgTexture = Content.Load<Texture2D>(@"backgrounds\level2bg");
             level2bg = new Background(level2BgTexture, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight, true);
             level2bg.setViewport(new Rectangle(0, level2BgTexture.Height - 768, 1024, 768));
 
@@ -196,6 +197,15 @@ namespace ShootanGaem
                         levelMenu.slideLeft();
 
                         loadButton.clicked = false;
+                    }
+                    if (DLCButton.clicked)
+                    {
+                        Process.Start("http://ea.com");
+                        DLCButton.clicked = false;
+                    }
+                    if (quitButton.clicked)
+                    {
+                        Exit();
                     }
                     if (level1.clicked)
                     {

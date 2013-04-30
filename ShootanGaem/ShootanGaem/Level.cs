@@ -53,6 +53,9 @@ namespace ShootanGaem
                         StreamReader dialogueStream = new StreamReader(@"dialogue\" + lineParts[1]);
                         dialogues.Enqueue(new Dialogue(dialogueStream, Content.Load<SpriteFont>("MenuFont"), cm));
                         break;
+                    case "END_LEVEL":
+                        events.Enqueue("END_LEVEL");
+                        break;
                     default:
                         StreamReader monsterStream = new StreamReader(@"monsters\" + line);
                         temp_wave.waveEnemies.Enqueue(createNPC(monsterStream));

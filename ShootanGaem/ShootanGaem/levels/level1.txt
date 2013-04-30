@@ -15,10 +15,16 @@ NEW_WAVE
 monster10.txt
 monster11.txt
 END_WAVE
-DIALOGUE level1preboss.txt
 NEW_WAVE
 appleboss.txt
 END_WAVE
+DIALOGUE level1dialogue3.txt
+NEW_WAVE
+appleboss2.txt
+monster4.txt
+monster6.txt
+END_WAVE
 DIALOGUE level1final.txt
+END_LEVEL
 NEW_WAVE
 END_WAVE

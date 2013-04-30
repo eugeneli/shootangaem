@@ -14,3 +14,7 @@ NEW_WAVE
 3monster1.txt
 3monster2.txt
 END_WAVE
+NEW_WAVE
+appleking.txt
+END_WAVE
+END_LEVEL
