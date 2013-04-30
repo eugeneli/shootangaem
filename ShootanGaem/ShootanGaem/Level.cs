@@ -87,7 +87,7 @@ namespace ShootanGaem
                         npc.setSprite(Content.Load<Texture2D>(@"sprites\" + lineParts[1]));
                         break;
                     case "BULLET":
-                        npc.addBullets(Content.Load<Texture2D>(@"sprites\"+ lineParts[1]), 100, Color.Orange);
+                        npc.addBullets(Content.Load<Texture2D>(@"sprites\"+ lineParts[1]), 100, Color.White);
                         break;
                     case "XPOS":
                         Double.TryParse(lineParts[1], out dummy);

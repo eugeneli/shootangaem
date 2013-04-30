@@ -1,0 +1,5 @@
+SPEAKER LEFT playerFace
+SPEAKER RIGHT villianFace
+DIALOGUE_BEGIN
+1 I dead.
+0 Yes.

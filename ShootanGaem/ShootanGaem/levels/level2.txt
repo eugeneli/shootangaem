@@ -1,3 +1,8 @@
+DIALOGUE level2dialogue1.txt
+NEW_WAVE
+2monster7.txt
+2monster8.txt
+END_WAVE
 NEW_WAVE
 2monster1.txt
 2monster2.txt

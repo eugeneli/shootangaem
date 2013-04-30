@@ -1,13 +1,24 @@
 DIALOGUE level1dialogue1.txt
 NEW_WAVE
+monster4.txt
+monster5.txt
+monster6.txt
+monster7.txt
+END_WAVE
+NEW_WAVE
 monster1.txt
 monster2.txt
 monster3.txt
 END_WAVE
 DIALOGUE level1dialogue2.txt
 NEW_WAVE
-monster4.txt
-monster5.txt
-monster6.txt
-monster7.txt
+monster10.txt
+monster11.txt
+END_WAVE
+DIALOGUE level1preboss.txt
+NEW_WAVE
+appleboss.txt
+END_WAVE
+DIALOGUE level1final.txt
+NEW_WAVE
 END_WAVE

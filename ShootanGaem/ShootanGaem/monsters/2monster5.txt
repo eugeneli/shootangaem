@@ -1,4 +1,5 @@
 ﻿SPRITE enemy
+BULLET round_bullet
 XPOS 964
 YPOS 0
 HP 200

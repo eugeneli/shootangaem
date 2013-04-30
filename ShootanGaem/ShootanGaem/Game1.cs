@@ -248,7 +248,7 @@ namespace ShootanGaem
                         Engine.addPlayerPattern(PatternManager.Straight);
                         Engine.setPlayerDelay(50);
 
-                        Engine.setPlayerSpeed(13);
+                        Engine.setPlayerSpeed(8);
                         Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.White, 15, 20);
 
                         //Load Level
@@ -263,7 +263,7 @@ namespace ShootanGaem
                         Engine.addPlayerPattern(PatternManager.Straight);
                         Engine.setPlayerDelay(50);
 
-                        Engine.setPlayerSpeed(13);
+                        Engine.setPlayerSpeed(14);
                         Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.White, 7, 20);
 
                         //Load Level
@@ -278,8 +278,8 @@ namespace ShootanGaem
                         Engine.addPlayerPattern(PatternManager.Straight);
                         Engine.setPlayerDelay(50);
 
-                        Engine.setPlayerSpeed(8);
-                        Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.White, 15, 30);
+                        Engine.setPlayerSpeed(10);
+                        Engine.addPlayerBullets(Content.Load<Texture2D>(@"sprites\round_bullet"), 100, Color.White, 7, 30);
 
                         //Load Level
                         Engine.loadLevel(level);

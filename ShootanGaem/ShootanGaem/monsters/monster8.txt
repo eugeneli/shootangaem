@@ -1,6 +1,6 @@
-SPRITE enemy
+﻿SPRITE enemy
 BULLET leaf
-XPOS 50
+XPOS 0
 YPOS 720
 HP 200
 PATTERN Spaz

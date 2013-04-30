@@ -234,6 +234,13 @@ namespace ShootanGaem
             }
             else if(currentEvent == "WAVE")
             {
+                //Godmode
+                if (keyboardState.IsKeyDown(Keys.G) && prevKeyboardState.IsKeyUp(Keys.G))
+                {
+                    player.toggleGod();
+                }
+                prevKeyboardState = keyboardState;
+
                 if (!level.isLevelOver() || activeEnemies.Count > 0)
                 {
                     if (activeEnemies.Count == 0)
@@ -275,7 +282,7 @@ namespace ShootanGaem
                                 if (player.isDead() && particleManager.isEmpty())
                                     reset();
 
-                                if (enemyBullets[c].getHitBox().Intersects(player.getHitBox()))
+                                if (!player.isGod() && enemyBullets[c].getHitBox().Intersects(player.getHitBox()))
                                 {
                                     //Spawn particles in middle of player
                                     Vector2 deadParticlePos = new Vector2(player.getPosition().X + player.getSprite().Width / 2, player.getPosition().Y + player.getSprite().Height / 2);
@@ -307,7 +314,7 @@ namespace ShootanGaem
                                 }
 
                                 //If bullet is out of bounds, recycle it
-                                if (enemyBullets[c].position.X < 0 || enemyBullets[c].position.Y < 0 || enemyBullets[c].position.X > GAME_WIDTH || enemyBullets[c].position.Y > GAME_HEIGHT)
+                                if (i < activeEnemies.Count && c < enemyBullets.Count && enemyBullets[c].position.X < 0 || enemyBullets[c].position.Y < 0 || enemyBullets[c].position.X > GAME_WIDTH || enemyBullets[c].position.Y > GAME_HEIGHT)
                                     activeEnemies[i].manageBullets.recycleBullet(enemyBullets[c]);
                             }
 

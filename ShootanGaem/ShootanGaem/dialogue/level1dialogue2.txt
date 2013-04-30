@@ -1,7 +1,9 @@
 SPEAKER LEFT playerFace
+SPEAKER RIGHT shawty
 SPEAKER RIGHT villianFace
 DIALOGUE_BEGIN
-1 YOU CANNOT WIN
-0 Our GNU/Love is unbreakable!
-1 u lie
+2 YOU CANNOT WIN
+0 Our love will carry us through!
+1 Correction: GNU/Love
+2 u lie
 0 no

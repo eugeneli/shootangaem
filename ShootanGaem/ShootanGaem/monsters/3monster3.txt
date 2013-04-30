@@ -1,4 +1,5 @@
 ﻿SPRITE enemy
+BULLET leaf
 XPOS 0
 YPOS 0
 HP 200
